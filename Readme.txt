@@ -1,0 +1,1 @@
+To play this game you have to click the square you want to move and click the square you want to move it to
