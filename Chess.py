@@ -29,11 +29,11 @@ initial_board = [
     ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
 ]
 
-board = [row[:] for row in initial_board]  # Create a copy of the initial board
+board = [row[:] for row in initial_board]  
 selected_piece = None
-turn = 'white'
+turn = 'white' 
 
-def draw_board():
+def draw_board(): # Create the board and th epieces
     canvas.delete("all")
     colors = ['#f0d9b5', '#b58863']
     for row in range(BOARD_SIZE):
@@ -55,7 +55,7 @@ def draw_board():
                     tags="piece"
                 )
 
-def on_tile_click(event):
+def on_tile_click(event): #When Clicked
     global selected_piece, turn
     col = event.x // TILE_SIZE
     row = event.y // TILE_SIZE
@@ -75,7 +75,7 @@ def on_tile_click(event):
 
     draw_board()
 
-def is_valid_move(piece, start_row, start_col, end_row, end_col):
+def is_valid_move(piece, start_row, start_col, end_row, end_col): #To check if move is valid
     if board[end_row][end_col] == '.' or board[end_row][end_col].islower() != piece.islower():
         if piece.lower() == 'p':  # Pawn
             direction = -1 if piece.isupper() else 1
@@ -117,9 +117,9 @@ def clear_path(start_row, start_col, end_row, end_col):
     return True
 
 # Initial draw of the board
-draw_board()
+draw_board() #Runs te function
 
-# Bind click event to the canvas
+# Binds the click to canvas
 canvas.bind("<Button-1>", on_tile_click)
 
 root.mainloop()
