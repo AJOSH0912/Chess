@@ -60,3 +60,66 @@ def on_tile_click(event):
     col = event.x // TILE_SIZE
     row = event.y // TILE_SIZE
 
+    if selected_piece:
+        old_row, old_col, piece = selected_piece
+        if (turn == 'white' and piece.isupper()) or (turn == 'black' and piece.islower()):
+            if is_valid_move(piece, old_row, old_col, row, col):
+                board[row][col] = piece
+                board[old_row][old_col] = '.'
+                turn = 'black' if turn == 'white' else 'white'
+        selected_piece = None
+    else:
+        piece = board[row][col]
+        if (turn == 'white' and piece.isupper()) or (turn == 'black' and piece.islower()):
+            selected_piece = (row, col, piece)
+
+    draw_board()
+
+def is_valid_move(piece, start_row, start_col, end_row, end_col):
+    if board[end_row][end_col] == '.' or board[end_row][end_col].islower() != piece.islower():
+        if piece.lower() == 'p':  # Pawn
+            direction = -1 if piece.isupper() else 1
+            start_row_check = 6 if piece.isupper() else 1
+            if start_col == end_col:
+                if end_row == start_row + direction and board[end_row][end_col] == '.':
+                    return True
+                if start_row == start_row_check and end_row == start_row + 2 * direction:
+                    return board[start_row + direction][start_col] == '.'
+            elif abs(start_col - end_col) == 1 and end_row == start_row + direction:
+                return board[end_row][end_col] != '.' and board[end_row][end_col].islower() != piece.islower()
+        elif piece.lower() == 'r':  # Rook
+            if start_row == end_row or start_col == end_col:
+                return clear_path(start_row, start_col, end_row, end_col)
+        elif piece.lower() == 'n':  # Knight
+            if (abs(start_row - end_row), abs(start_col - end_col)) in [(2, 1), (1, 2)]:
+                return True
+        elif piece.lower() == 'b':  # Bishop
+            if abs(start_row - end_row) == abs(start_col - end_col):
+                return clear_path(start_row, start_col, end_row, end_col)
+        elif piece.lower() == 'q':  # Queen
+            if abs(start_row - end_row) == abs(start_col - end_col) or start_row == end_row or start_col == end_col:
+                return clear_path(start_row, start_col, end_row, end_col)
+        elif piece.lower() == 'k':  # King
+            if max(abs(start_row - end_row), abs(start_col - end_col)) == 1:
+                return True
+    return False
+
+def clear_path(start_row, start_col, end_row, end_col):
+    step_row = (end_row - start_row) // max(1, abs(end_row - start_row))
+    step_col = (end_col - start_col) // max(1, abs(end_col - start_col))
+    current_row, current_col = start_row + step_row, start_col + step_col
+
+    while (current_row != end_row or current_col != end_col):
+        if board[current_row][current_col] != '.':
+            return False
+        current_row += step_row
+        current_col += step_col
+    return True
+
+# Initial draw of the board
+draw_board()
+
+# Bind click event to the canvas
+canvas.bind("<Button-1>", on_tile_click)
+
+root.mainloop()
